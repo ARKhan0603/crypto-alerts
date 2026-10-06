@@ -11,6 +11,13 @@ from django.utils import timezone
 from .models import Alert, Cryptocurrency
 from .services.coingecko import CoinGeckoError, fetch_prices
 
+from datetime import timedelta
+
+from django.contrib.auth import get_user_model
+from django.db.models import Q
+
+from .services.summary import build_summary
+
 logger = logging.getLogger(__name__)
 
 
@@ -115,4 +122,48 @@ def send_alert_email(alert_id, price):
 
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
     logger.info("Alert email sent: alert_id=%s user_id=%s", alert_id, user.pk)
+    return True
+
+
+@shared_task
+def send_daily_summaries():
+    """Queue one summary email per user who has active or recently triggered alerts."""
+    since = timezone.now() - timedelta(hours=24)
+    user_ids = (
+        get_user_model().objects
+        .filter(Q(alerts__is_active=True) | Q(alerts__triggered_at__gte=since))
+        .values_list("pk", flat=True)
+        .distinct()
+    )
+
+    count = 0
+    for user_id in user_ids:
+        send_user_summary_email.delay(user_id)
+        count += 1
+    logger.info("Daily summaries queued for %d user(s)", count)
+    return count
+
+
+@shared_task(
+    autoretry_for=(smtplib.SMTPException, ConnectionError, TimeoutError),
+    retry_backoff=True,
+    max_retries=3,
+)
+def send_user_summary_email(user_id):
+    """Build and send one user's alert summary."""
+    User = get_user_model()
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        logger.warning("Summary skipped: user_id=%s no longer exists", user_id)
+        return False
+
+    summary = build_summary(user)
+    if summary is None:
+        logger.info("Summary skipped: user_id=%s has nothing to report", user_id)
+        return False
+
+    subject, body = summary
+    send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [user.email])
+    logger.info("Summary email sent: user_id=%s", user_id)
     return True
