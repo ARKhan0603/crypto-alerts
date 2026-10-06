@@ -169,3 +169,24 @@ CELERY_TASK_TIME_LIMIT = 30  # hard stop for any task, in seconds
 # CoinGecko
 COINGECKO_API_URL = "https://api.coingecko.com/api/v3"
 COINGECKO_TIMEOUT = 10  # seconds
+
+
+# Email
+EMAIL_BACKEND = config(
+    "EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_HOST = config("EMAIL_HOST", default="")
+EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="alerts@crypto-alerts.local")
+
+
+CELERY_BEAT_SCHEDULE = {
+    "fetch-crypto-prices-every-20s": {
+        "task": "apps.alerts.tasks.fetch_crypto_prices",
+        "schedule": 20.0,
+        "options": {"expires": 20},
+    },
+}
