@@ -155,3 +155,17 @@ LOGGING = {
         "apps": {"handlers": ["console"], "level": "INFO", "propagate": False},
     },
 }
+
+
+# Celery
+CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL.rsplit("/", 1)[0] + "/1"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TIME_LIMIT = 30  # hard stop for any task, in seconds
+
+# CoinGecko
+COINGECKO_API_URL = "https://api.coingecko.com/api/v3"
+COINGECKO_TIMEOUT = 10  # seconds
