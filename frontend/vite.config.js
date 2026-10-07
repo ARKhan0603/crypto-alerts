@@ -1,7 +1,6 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { loadEnv } from 'vite'
-import { defineConfig } from 'vitest/config'
+import { defineConfig, loadEnv } from 'vite'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -12,14 +11,6 @@ export default defineConfig(({ mode }) => {
     server: {
       // The Django API does not enable CORS, so dev requests are proxied same-origin.
       proxy: { '/api': { target: backend, changeOrigin: true } },
-    },
-    test: {
-      environment: 'jsdom',
-      globals: true,
-      setupFiles: './src/test/setup.js',
-      css: false,
-      // Node's Request needs absolute URLs, so tests use an absolute API base.
-      env: { VITE_API_BASE_URL: 'http://localhost/api/v1' },
     },
   }
 })

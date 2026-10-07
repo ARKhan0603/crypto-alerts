@@ -4,7 +4,7 @@ React dashboard for the Django [crypto price alert API](../crypto-alerts). Sign 
 prices for BTC / ETH / XRP and more, watch live prices, and get notified when a target is hit.
 
 **Stack:** React 19 · Vite · Redux Toolkit + RTK Query · React Router · Tailwind CSS v4 ·
-Framer Motion · React Hook Form · Vitest + Testing Library · oxlint + Prettier
+Framer Motion · React Hook Form · oxlint + Prettier
 
 ## Getting started
 
@@ -28,7 +28,6 @@ different origin, set `VITE_API_BASE_URL` and enable CORS on the API.
 | --- | --- |
 | `npm run dev` | Dev server with API proxy |
 | `npm run build` | Production build |
-| `npm test` | Run the test suite once (`test:watch` to iterate) |
 | `npm run lint` / `format:check` | oxlint / Prettier |
 
 ## Architecture
