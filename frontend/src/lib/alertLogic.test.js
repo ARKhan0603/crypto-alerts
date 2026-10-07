@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { distanceToTarget, getAlertStatus, isThresholdHit } from './alertLogic'
+import {
+  distanceToTarget,
+  getAlertStatus,
+  getProgress,
+  isThresholdHit,
+} from './alertLogic'
 
 describe('isThresholdHit', () => {
   it('fires "above" alerts at or over the target', () => {
@@ -46,5 +51,17 @@ describe('distanceToTarget', () => {
   })
   it('returns null without a price', () => {
     expect(distanceToTarget('above', 90, null)).toBeNull()
+  })
+})
+
+describe('getProgress', () => {
+  it('is full once the target is reached and empty-ish without data', () => {
+    expect(getProgress(0)).toBe(100)
+    expect(getProgress(-5)).toBe(100)
+    expect(getProgress(null)).toBe(0)
+  })
+  it('is clamped while the target is still ahead', () => {
+    expect(getProgress(5)).toBe(80)
+    expect(getProgress(90)).toBe(4)
   })
 })

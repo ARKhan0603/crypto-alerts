@@ -25,3 +25,10 @@ export function distanceToTarget(alertType, targetPrice, price) {
   const move = ((targetPrice - price) / price) * 100
   return alertType === ALERT_TYPES.ABOVE ? move : -move
 }
+
+/** 0–100: how close the price is to the target (full once the target is reached). */
+export function getProgress(distance) {
+  if (distance === null) return 0
+  if (distance <= 0) return 100
+  return Math.max(4, Math.min(96, 100 - distance * 4))
+}
