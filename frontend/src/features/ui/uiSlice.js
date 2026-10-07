@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-/** `editor` is the alert form drawer: closed, creating, or editing a given alert id. */
+/** `editor` is the alert form drawer: closed, creating (optionally preset to a coin), or editing. */
 const initialState = {
-  editor: { open: false, alertId: null },
+  editor: { open: false, alertId: null, symbol: null },
   notificationsOpen: false,
   alertFilter: 'all', // all | active | triggered
 }
@@ -12,10 +12,14 @@ const uiSlice = createSlice({
   initialState,
   reducers: {
     editorOpened(state, { payload }) {
-      state.editor = { open: true, alertId: payload?.alertId ?? null }
+      state.editor = {
+        open: true,
+        alertId: payload?.alertId ?? null,
+        symbol: payload?.symbol ?? null,
+      }
     },
     editorClosed(state) {
-      state.editor = { open: false, alertId: null }
+      state.editor = { open: false, alertId: null, symbol: null }
     },
     notificationsToggled(state, { payload }) {
       state.notificationsOpen = payload ?? !state.notificationsOpen
