@@ -18,6 +18,8 @@ export default defineConfig(({ mode }) => {
       globals: true,
       setupFiles: './src/test/setup.js',
       css: false,
+      // Node's Request needs absolute URLs, so tests use an absolute API base.
+      env: { VITE_API_BASE_URL: 'http://localhost/api/v1' },
     },
   }
 })
