@@ -11,7 +11,6 @@ const rawBaseQuery = fetchBaseQuery({
   },
 })
 
-/** Adds auth and signs the user out when the API rejects a stored token. */
 const baseQuery = async (args, api, extraOptions) => {
   const result = await rawBaseQuery(args, api, extraOptions)
   if (result.error?.status === 401 && api.getState().auth.token) {
@@ -22,7 +21,6 @@ const baseQuery = async (args, api, extraOptions) => {
 
 const MAX_ALERT_PAGES = 25
 
-/** Patch the single cached alert list in place (used for optimistic updates). */
 const patchAlerts = (dispatch, recipe) =>
   dispatch(api.util.updateQueryData('getAlerts', undefined, recipe))
 
@@ -62,13 +60,10 @@ export const api = createApi({
       },
     }),
 
-    // ── Prices ──────────────────────────────────────────────────────────────
     getCryptocurrencies: build.query({
       query: () => '/cryptocurrencies/',
     }),
 
-    // ── Alerts ──────────────────────────────────────────────────────────────
-    /** The API paginates; walk every page so the UI works with one complete cached list. */
     getAlerts: build.query({
       async queryFn(_arg, _api, _extra, fetchWithBQ) {
         const alerts = []

@@ -1,7 +1,4 @@
-/**
- * Turn an RTK Query error (DRF-shaped payloads, network failures) into UI-friendly data.
- * DRF returns `{ field: ["msg"] }`, `{ detail: "msg" }` or `{ non_field_errors: [...] }`.
- */
+
 const asText = (value) => (Array.isArray(value) ? value.join(' ') : String(value))
 
 export function getFieldErrors(error) {

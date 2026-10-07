@@ -1,4 +1,3 @@
-/** localStorage wrappers that never throw (private mode, blocked storage, SSR/tests). */
 export function readStorage(key) {
   try {
     return window.localStorage.getItem(key)
@@ -12,6 +11,6 @@ export function writeStorage(key, value) {
     if (value === null || value === undefined) window.localStorage.removeItem(key)
     else window.localStorage.setItem(key, value)
   } catch {
-    // Persistence is best-effort; the session simply won't survive a reload.
+    
   }
 }

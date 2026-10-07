@@ -1,4 +1,3 @@
-/** Pure threshold rules shared by selectors, middleware and components. */
 
 export const ALERT_TYPES = { ABOVE: 'above', BELOW: 'below' }
 
@@ -7,10 +6,7 @@ export function isThresholdHit(alertType, targetPrice, price) {
   return alertType === ALERT_TYPES.ABOVE ? price >= targetPrice : price <= targetPrice
 }
 
-/**
- * triggered – the backend already fired it · hit – the live price crossed the target
- * paused – inactive without having fired · watching – waiting for the target
- */
+
 export function getAlertStatus(alert, price) {
   if (alert.triggered_at) return 'triggered'
   if (!alert.is_active) return 'paused'
@@ -19,7 +15,6 @@ export function getAlertStatus(alert, price) {
     : 'watching'
 }
 
-/** Percent move still needed for the price to reach the target (negative once crossed). */
 export function distanceToTarget(alertType, targetPrice, price) {
   if (!Number.isFinite(price) || price === 0 || !Number.isFinite(targetPrice)) return null
   const move = ((targetPrice - price) / price) * 100

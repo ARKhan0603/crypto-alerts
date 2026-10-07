@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-/** `editor` is the alert form drawer: closed, creating (optionally preset to a coin), or editing. */
 const initialState = {
   editor: { open: false, alertId: null, symbol: null },
   notificationsOpen: false,

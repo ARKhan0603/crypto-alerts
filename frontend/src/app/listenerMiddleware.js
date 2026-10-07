@@ -13,10 +13,7 @@ import { selectRawAlerts } from '../features/alerts/selectors'
 import { selectPricesBySymbol } from '../features/prices/selectors'
 import { api } from '../services/api'
 
-/**
- * Side effects live here rather than in components: session persistence, cache cleanup on
- * logout, threshold-hit detection against the RTK Query cache, and mutation feedback.
- */
+
 export const listenerMiddleware = createListenerMiddleware()
 const { startListening } = listenerMiddleware
 
