@@ -1,3 +1,19 @@
+import { Route, Routes } from 'react-router-dom'
+import LoginPage from './features/auth/LoginPage'
+import ProtectedRoute from './features/auth/ProtectedRoute'
+import RegisterPage from './features/auth/RegisterPage'
+import DashboardPlaceholder from './features/ui/DashboardPlaceholder'
+import NotFoundPage from './features/ui/NotFoundPage'
+
 export default function App() {
-  return <h1 className="text-lime p-8 text-2xl font-semibold">Tickr</h1>
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<DashboardPlaceholder />} />
+      </Route>
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  )
 }
