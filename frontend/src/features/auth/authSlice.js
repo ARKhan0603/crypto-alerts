@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { STORAGE_KEYS } from '../../lib/config'
+import { STORAGE_KEYS } from '../../lib/constants'
 import { readStorage } from '../../lib/storage'
 
 const initialState = {

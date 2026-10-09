@@ -1,17 +1,9 @@
 import clsx from 'clsx'
-
-const STATUS = {
-  hit: { label: 'Target hit', className: 'bg-lime text-ink-950 animate-pulse-ring' },
-  watching: { label: 'Watching', className: 'bg-ink-700 text-ink-200' },
-  triggered: {
-    label: 'Triggered',
-    className: 'bg-amber/15 text-amber border border-amber/30',
-  },
-  paused: { label: 'Paused', className: 'bg-ink-800 text-ink-400 border border-ink-600' },
-}
+import { ALERT_STATUS, STATUS_BADGES } from '../../lib/constants'
 
 export default function StatusBadge({ status }) {
-  const { label, className } = STATUS[status] ?? STATUS.watching
+  const { label, className } =
+    STATUS_BADGES[status] ?? STATUS_BADGES[ALERT_STATUS.WATCHING]
   return (
     <span
       className={clsx(
@@ -19,7 +11,9 @@ export default function StatusBadge({ status }) {
         className,
       )}
     >
-      {status === 'watching' && <span className="bg-up size-1.5 rounded-full" />}
+      {status === ALERT_STATUS.WATCHING && (
+        <span className="bg-up size-1.5 rounded-full" />
+      )}
       {label}
     </span>
   )

@@ -1,88 +1,82 @@
-# Tickr — frontend
+# Tickr (frontend)
 
-React dashboard for the Django [crypto price alert API](../crypto-alerts). Sign in, set target
-prices for BTC / ETH / XRP and more, watch live prices, and get notified when a target is hit.
+The React dashboard for the [alerts API](../crypto-alerts). You log in, pick a coin, set a target
+price, and the page shows live prices and tells you when a target is hit.
 
-**Stack:** React 19 · Vite · Redux Toolkit + RTK Query · React Router · Tailwind CSS v4 ·
-Framer Motion · React Hook Form · oxlint + Prettier
+Built with React 19, Vite, Redux Toolkit (RTK Query), React Router, Tailwind CSS v4, Framer
+Motion and React Hook Form. Linting is oxlint, formatting is Prettier.
 
-## Getting started
+## Running it
+
+Start the backend first (see its README), then:
 
 ```bash
-# 1. backend (see ../crypto-alerts/README.md) — Postgres, Redis, Celery worker + beat
-python manage.py seed_cryptocurrencies
-python manage.py runserver            # http://127.0.0.1:8000
-
-# 2. frontend
 cd frontend
 npm install
-cp .env.example .env                  # optional
-npm run dev                           # http://localhost:5173
+npm run dev        # Vite on http://localhost:5175
 ```
 
-The backend does not enable CORS, so in development Vite proxies `/api` to
-`VITE_PROXY_TARGET` (default `http://127.0.0.1:8000`). For a production build served from a
-different origin, set `VITE_API_BASE_URL` and enable CORS on the API.
+The API doesn't allow CORS, so the app and the API need to be on the same origin. nginx does
+that. From the repo root:
 
-| Script | Purpose |
+```bash
+nginx -c "$PWD/nginx/nginx.conf" -e /tmp/tickr-nginx-error.log
+```
+
+Then open http://localhost:8095. To stop it, run the same command with `-s stop` on the end.
+
+`nginx/nginx.conf` sends `/api` to Django on port 8000 and everything else to the Vite dev
+server. For production, run `npm run build` and serve `frontend/dist` from nginx instead (there's
+a commented block in the config for that). If you'd rather host the API on another domain, set
+`VITE_API_BASE_URL` and turn on CORS in Django.
+
+## Scripts
+
+| Command | What it does |
 | --- | --- |
-| `npm run dev` | Dev server with API proxy |
-| `npm run build` | Production build |
-| `npm run lint` / `format:check` | oxlint / Prettier |
+| `npm run dev` | start the Vite dev server |
+| `npm run build` | production build |
+| `npm run lint` | run oxlint |
+| `npm run format:check` | check formatting |
 
-## Architecture
+## Project layout
 
 ```
 src/
-├── app/            store + listener middleware (side effects)
-├── services/api.js RTK Query API: every request goes through here
-├── features/
-│   ├── auth/           authSlice, login/register pages, protected route
-│   ├── alerts/         selectors, alert list/cards, create/edit drawer
-│   ├── prices/         selectors, polling hook, price cards
-│   ├── notifications/  slice, hit detection, bell panel, toasts
-│   ├── dashboard/      page composition
-│   └── ui/             uiSlice (drawer, filter, panel state)
-├── components/     header and shared UI primitives
-└── lib/            pure helpers (threshold rules, formatting, error mapping)
+  app/            Redux store and the listener middleware
+  services/api.js every API request goes through here (RTK Query)
+  features/
+    auth/           login, register, protected route
+    alerts/         alert list, cards, create/edit drawer
+    prices/         price cards and the polling hook
+    notifications/  toasts, bell panel, hit detection
+    dashboard/      the main page
+    ui/             small UI state (drawer, filter, panel)
+  components/     header and shared buttons/fields
+  lib/            helpers and constants
 ```
 
-### State
+## How it works
 
-| Slice | Holds |
-| --- | --- |
-| `api` (RTK Query) | cached alerts and prices, request status |
-| `auth` | token and username, hydrated from `localStorage` |
-| `ui` | alert drawer, filter tab and notification panel state |
-| `notifications` | feed + toasts (entity adapter), alerts already announced |
+**Data.** Prices and alerts are fetched with RTK Query and refreshed every 20 seconds (only
+while the tab is focused). The alerts query loads every page of the API so the cache always has
+the full list. Updating or deleting an alert changes the UI straight away and rolls back if the
+request fails. A 401 from any request logs the user out.
 
-### RTK Query
+**Alert status.** Each alert is one of: watching, hit (the live price passed the target), triggered
+(the backend already fired it) or paused. The status is worked out in the browser by comparing
+the alert with the latest price.
 
-- **Queries:** `getCryptocurrencies` (live prices) and `getAlerts` are polled every **20 s**
-  (`skipPollingIfUnfocused`), and refetch on window focus / reconnect. `getAlerts` walks every
-  page of the paginated API so the cache holds one complete list.
-- **Mutations:** `createAlert`, `updateAlert`, `deleteAlert` (plus `login`, `register`, `logout`).
-  Update and delete are **optimistic** with automatic rollback; tags (`Alert`) keep the cache in
-  sync.
-- A `401` from any request signs the user out.
-- Components read data through **selectors** (`selectAlertsWithStatus`, `selectPricesBySymbol`…)
-  that join cached alerts with cached prices.
+**Notifications.** The listener middleware (`src/app/listenerMiddleware.js`) watches for new
+prices and alerts. When a target is hit it raises one toast and one bell entry per alert.
+Alerts that fired before you opened the page are not announced again. The same file saves the
+login to `localStorage` and clears the cache on logout.
 
-### Middleware (listener)
+**Constants.** Shared values (alert types, statuses, colors, poll interval) live in
+`src/lib/constants.js`.
 
-`src/app/listenerMiddleware.js` owns the side effects: persisting the session, wiping the cache
-on logout, detecting threshold hits whenever prices or alerts refresh, and toasting mutation
-results/failures.
+## Good to know
 
-### Threshold indicators and notifications
-
-Every alert has a status: **watching**, **hit** (live price crossed the target, shown with a glowing
-card and pulsing badge), **triggered** (the backend already fired and deactivated it) or
-**paused**. Hits and backend triggers raise one notification per alert (toast + bell feed);
-alerts that fired before the session started are not replayed.
-
-## Notes
-
-- Triggered alerts cannot be re-armed (the API treats `triggered_at` as read-only), so they offer
-  delete only.
-- Alert state changes on the server are picked up on the next 20 s poll.
+- A triggered alert can't be turned back on because the API treats `triggered_at` as read-only.
+  You can only delete it.
+- Changes made on the server show up on the next 20 second refresh.

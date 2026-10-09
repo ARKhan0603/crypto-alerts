@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react'
+import { DEFAULT_NOW_INTERVAL_MS } from './constants'
 
-/** Current timestamp that re-renders the caller every `intervalMs` (for relative times). */
-export function useNow(intervalMs = 1000) {
+const isValidInterval = (value) =>
+  typeof value === 'number' && Number.isFinite(value) && value > 0
+
+
+export function useNow(intervalMs = DEFAULT_NOW_INTERVAL_MS) {
+  const safeInterval = isValidInterval(intervalMs) ? intervalMs : DEFAULT_NOW_INTERVAL_MS
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), intervalMs)
+    const id = setInterval(() => setNow(Date.now()), safeInterval)
     return () => clearInterval(id)
-  }, [intervalMs])
+  }, [safeInterval])
   return now
 }

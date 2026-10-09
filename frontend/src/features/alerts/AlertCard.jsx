@@ -4,14 +4,15 @@ import { memo } from 'react'
 import Button from '../../components/ui/Button'
 import { formatPercent, formatPrice, formatRelativeTime } from '../../lib/format'
 import { getProgress } from '../../lib/alertLogic'
+import { ALERT_STATUS, ALERT_TYPES } from '../../lib/constants'
 import { getCoinColor } from '../prices/coinStyle'
 import StatusBadge from './StatusBadge'
 
 function AlertCard({ alert, onEdit, onDelete, onToggle, busy }) {
   const { status } = alert
   const color = getCoinColor(alert.symbol)
-  const isHit = status === 'hit'
-  const isTriggered = status === 'triggered'
+  const isHit = status === ALERT_STATUS.HIT
+  const isTriggered = status === ALERT_STATUS.TRIGGERED
   const progress = getProgress(alert.distance)
 
   return (
@@ -39,7 +40,7 @@ function AlertCard({ alert, onEdit, onDelete, onToggle, busy }) {
             <p className="font-medium">
               {alert.coinName}{' '}
               <span className="text-ink-400">
-                {alert.alert_type === 'above' ? 'rises above' : 'falls below'}
+                {alert.alert_type === ALERT_TYPES.ABOVE ? 'rises above' : 'falls below'}
               </span>
             </p>
             <p className="font-mono text-xl font-semibold tabular-nums">
@@ -77,7 +78,7 @@ function AlertCard({ alert, onEdit, onDelete, onToggle, busy }) {
             {isTriggered
               ? `Fired ${formatRelativeTime(alert.triggered_at)}`
               : alert.distance === null
-                ? '—'
+                ? '-'
                 : alert.distance <= 0
                   ? 'Target reached'
                   : `${formatPercent(alert.distance, { signed: false })} away`}

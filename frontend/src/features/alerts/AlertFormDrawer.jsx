@@ -7,6 +7,7 @@ import Alert from '../../components/ui/Alert'
 import Button from '../../components/ui/Button'
 import Field from '../../components/ui/Field'
 import { getErrorMessage, getFieldErrors } from '../../lib/errors'
+import { ALERT_TYPE_OPTIONS, ALERT_TYPES } from '../../lib/constants'
 import { formatPrice } from '../../lib/format'
 import { useCreateAlertMutation, useUpdateAlertMutation } from '../../services/api'
 import { selectCoins } from '../prices/selectors'
@@ -17,7 +18,7 @@ const PRICE_PATTERN = /^\d+(\.\d{1,8})?$/
 
 const blankValues = (symbol) => ({
   symbol: symbol ?? '',
-  alert_type: 'above',
+  alert_type: ALERT_TYPES.ABOVE,
   target_price: '',
   is_active: true,
 })
@@ -122,17 +123,14 @@ function AlertForm({ editor, onClose }) {
             Notify me when price is
           </legend>
           <div className="bg-ink-900 grid grid-cols-2 gap-2 rounded-xl p-1">
-            {[
-              ['above', 'Above', '▲'],
-              ['below', 'Below', '▼'],
-            ].map(([value, label, icon]) => (
+            {ALERT_TYPE_OPTIONS.map(({ value, label, icon }) => (
               <label
                 key={value}
                 className={clsx(
                   'flex cursor-pointer items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors',
                   'has-[:focus-visible]:outline-lime has-[:focus-visible]:outline-2',
                   alertType === value
-                    ? value === 'above'
+                    ? value === ALERT_TYPES.ABOVE
                       ? 'bg-up/15 text-up'
                       : 'bg-down/15 text-down'
                     : 'text-ink-400 hover:text-ink-200',

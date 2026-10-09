@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
+import ErrorBoundary from './components/ErrorBoundary'
 import LoginPage from './features/auth/LoginPage'
 import ProtectedRoute from './features/auth/ProtectedRoute'
 import RegisterPage from './features/auth/RegisterPage'
@@ -17,9 +18,11 @@ export default function App() {
         <Route
           path="/"
           element={
-            <Suspense fallback={<div className="min-h-screen" aria-busy="true" />}>
-              <DashboardPage />
-            </Suspense>
+            <ErrorBoundary>
+              <Suspense fallback={<div className="min-h-screen" aria-busy="true" />}>
+                <DashboardPage />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
       </Route>

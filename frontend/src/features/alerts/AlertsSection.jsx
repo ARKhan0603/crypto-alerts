@@ -3,7 +3,11 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '../../components/ui/Button'
-import { PRICE_POLL_INTERVAL_MS } from '../../lib/config'
+import {
+  ALERT_FILTERS,
+  EMPTY_ALERTS_COPY,
+  PRICE_POLL_INTERVAL_MS,
+} from '../../lib/constants'
 import { getErrorMessage } from '../../lib/errors'
 import {
   useDeleteAlertMutation,
@@ -13,21 +17,6 @@ import {
 import { alertFilterChanged, editorOpened, selectAlertFilter } from '../ui/uiSlice'
 import AlertCard from './AlertCard'
 import { selectAlertCounts, selectVisibleAlerts } from './selectors'
-
-const FILTERS = [
-  ['all', 'All'],
-  ['active', 'Active'],
-  ['triggered', 'Triggered'],
-]
-
-const EMPTY_COPY = {
-  all: ['No alerts yet', 'Create your first alert and we’ll watch the market for you.'],
-  active: ['No active alerts', 'Everything has fired or is paused.'],
-  triggered: [
-    'Nothing has triggered yet',
-    'Alerts that reach their target will show up here.',
-  ],
-}
 
 export default function AlertsSection() {
   const dispatch = useDispatch()
@@ -60,7 +49,7 @@ export default function AlertsSection() {
     [deleteAlert],
   )
 
-  const [emptyTitle, emptyCopy] = EMPTY_COPY[filter]
+  const [emptyTitle, emptyCopy] = EMPTY_ALERTS_COPY[filter]
 
   return (
     <section aria-labelledby="alerts-heading">
@@ -85,7 +74,7 @@ export default function AlertsSection() {
         aria-label="Filter alerts"
         className="bg-ink-900 mb-5 flex gap-1 rounded-xl p-1 sm:w-fit"
       >
-        {FILTERS.map(([value, label]) => (
+        {ALERT_FILTERS.map(([value, label]) => (
           <button
             key={value}
             type="button"

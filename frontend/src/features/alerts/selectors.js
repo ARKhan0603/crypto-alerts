@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit'
+import { ALERT_STATUS } from '../../lib/constants'
 import { distanceToTarget, getAlertStatus } from '../../lib/alertLogic'
 import { api } from '../../services/api'
 import { selectPricesBySymbol } from '../prices/selectors'
@@ -34,8 +35,11 @@ export const selectVisibleAlerts = createSelector(
   [selectAlertsWithStatus, selectAlertFilter],
   (alerts, filter) => {
     if (filter === 'active')
-      return alerts.filter((a) => a.status === 'watching' || a.status === 'hit')
-    if (filter === 'triggered') return alerts.filter((a) => a.status === 'triggered')
+      return alerts.filter(
+        (a) => a.status === ALERT_STATUS.WATCHING || a.status === ALERT_STATUS.HIT,
+      )
+    if (filter === 'triggered')
+      return alerts.filter((a) => a.status === ALERT_STATUS.TRIGGERED)
     return alerts
   },
 )
@@ -43,9 +47,10 @@ export const selectVisibleAlerts = createSelector(
 export const selectAlertCounts = createSelector(selectAlertsWithStatus, (alerts) => {
   const counts = { all: alerts.length, active: 0, triggered: 0, hit: 0 }
   for (const alert of alerts) {
-    if (alert.status === 'triggered') counts.triggered += 1
-    if (alert.status === 'watching' || alert.status === 'hit') counts.active += 1
-    if (alert.status === 'hit') counts.hit += 1
+    if (alert.status === ALERT_STATUS.TRIGGERED) counts.triggered += 1
+    if (alert.status === ALERT_STATUS.WATCHING || alert.status === ALERT_STATUS.HIT)
+      counts.active += 1
+    if (alert.status === ALERT_STATUS.HIT) counts.hit += 1
   }
   return counts
 })
@@ -54,7 +59,8 @@ export const selectAlertCounts = createSelector(selectAlertsWithStatus, (alerts)
 export const selectHitCountBySymbol = createSelector(selectAlertsWithStatus, (alerts) => {
   const counts = {}
   for (const alert of alerts) {
-    if (alert.status === 'hit') counts[alert.symbol] = (counts[alert.symbol] ?? 0) + 1
+    if (alert.status === ALERT_STATUS.HIT)
+      counts[alert.symbol] = (counts[alert.symbol] ?? 0) + 1
   }
   return counts
 })

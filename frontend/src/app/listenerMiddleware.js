@@ -1,5 +1,5 @@
 import { createListenerMiddleware, isAnyOf, isRejectedWithValue } from '@reduxjs/toolkit'
-import { STORAGE_KEYS } from '../lib/config'
+import { STORAGE_KEYS } from '../lib/constants'
 import { getErrorMessage } from '../lib/errors'
 import { writeStorage } from '../lib/storage'
 import { credentialsSet, loggedOut } from '../features/auth/authSlice'
@@ -12,7 +12,6 @@ import {
 import { selectRawAlerts } from '../features/alerts/selectors'
 import { selectPricesBySymbol } from '../features/prices/selectors'
 import { api } from '../services/api'
-
 
 export const listenerMiddleware = createListenerMiddleware()
 const { startListening } = listenerMiddleware

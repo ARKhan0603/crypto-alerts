@@ -1,10 +1,10 @@
 # Crypto Price Alerts
 
-A full-stack cryptocurrency price alert platform.
+Set a target price for a coin (BTC, ETH, etc.) and get an email when it's reached.
+It's two apps in one repo:
 
-| Folder | Description |
-| --- | --- |
-| [`crypto-alerts/`](crypto-alerts) | Django REST API: token auth, alerts CRUD, Celery price fetching and email notifications |
-| [`frontend/`](frontend) | React + Redux Toolkit dashboard for managing alerts and watching live prices |
+- `crypto-alerts/` - the Django API. Handles login, alerts, and the Celery jobs that fetch prices and send emails.
+- `frontend/` - the React dashboard.
+- `nginx/` - config that puts both behind one address.
 
-See each folder's README for setup instructions.
+Each folder has its own README with setup steps.

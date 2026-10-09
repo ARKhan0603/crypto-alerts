@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { PRICE_FLASH_COLORS } from '../../lib/constants'
 import { formatPrice, formatRelativeTime } from '../../lib/format'
 import { getCoinColor } from './coinStyle'
 
@@ -18,7 +19,12 @@ function usePriceDirection(price) {
 export default function PriceCard({ coin, hitCount = 0, index = 0, onCreateAlert }) {
   const direction = usePriceDirection(coin.price)
   const color = getCoinColor(coin.symbol)
-  const flash = direction > 0 ? '#3ddc97' : direction < 0 ? '#ff6b6b' : '#e8eef5'
+  const flash =
+    direction > 0
+      ? PRICE_FLASH_COLORS.UP
+      : direction < 0
+        ? PRICE_FLASH_COLORS.DOWN
+        : PRICE_FLASH_COLORS.NEUTRAL
 
   return (
     <motion.article
@@ -68,7 +74,7 @@ export default function PriceCard({ coin, hitCount = 0, index = 0, onCreateAlert
         <motion.p
           key={coin.price}
           initial={{ color: flash }}
-          animate={{ color: '#e8eef5' }}
+          animate={{ color: PRICE_FLASH_COLORS.NEUTRAL }}
           transition={{ duration: 1.6 }}
           className="font-mono text-2xl font-semibold tracking-tight tabular-nums"
         >

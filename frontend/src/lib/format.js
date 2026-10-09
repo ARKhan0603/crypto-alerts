@@ -15,12 +15,12 @@ const usdPrecise = new Intl.NumberFormat('en-US', {
 /** Format a price; sub-dollar assets (XRP, DOGE…) get extra precision. */
 export function formatPrice(value) {
   const n = Number(value)
-  if (value === null || value === undefined || value === '' || Number.isNaN(n)) return '—'
+  if (value === null || value === undefined || value === '' || Number.isNaN(n)) return '-'
   return Math.abs(n) < 1 ? usdPrecise.format(n) : usd.format(n)
 }
 
 export function formatPercent(value, { signed = true } = {}) {
-  if (!Number.isFinite(value)) return '—'
+  if (!Number.isFinite(value)) return '-'
   const sign = signed && value > 0 ? '+' : ''
   return `${sign}${value.toFixed(2)}%`
 }

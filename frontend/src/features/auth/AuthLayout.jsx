@@ -3,7 +3,7 @@ import Logo from '../../components/ui/Logo'
 
 const highlights = [
   ['Live prices', 'Refreshed every 20 seconds, straight from the cache.'],
-  ['Precise targets', 'Above or below — alert on the exact price you care about.'],
+  ['Precise targets', 'Above or below - alert on the exact price you care about.'],
   ['Instant signals', 'See the moment a threshold is hit, and get emailed too.'],
 ]
 

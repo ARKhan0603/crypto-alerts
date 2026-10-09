@@ -1,7 +1,8 @@
 import { formatPrice } from '../../lib/format'
 import { getAlertStatus } from '../../lib/alertLogic'
+import { ALERT_STATUS, ALERT_TYPES } from '../../lib/constants'
 
-const directionWord = (type) => (type === 'above' ? 'above' : 'below')
+const directionWord = (type) => (type === ALERT_TYPES.ABOVE ? 'above' : 'below')
 
 /**
  * Decide which notifications the current alerts + prices call for. Pure, so it is easy to
@@ -22,7 +23,7 @@ export function detectAlertEvents({ alerts, prices, acknowledged, seeded }) {
 
     const coin = prices[alert.symbol]
     const status = getAlertStatus(alert, coin?.price ?? null)
-    if (status !== 'hit' && status !== 'triggered') continue
+    if (status !== ALERT_STATUS.HIT && status !== ALERT_STATUS.TRIGGERED) continue
 
     const target = formatPrice(alert.target_price)
     const current = coin?.price != null ? ` Now ${formatPrice(coin.price)}.` : ''
@@ -33,7 +34,7 @@ export function detectAlertEvents({ alerts, prices, acknowledged, seeded }) {
       alertId: alert.id,
       title: `${alert.symbol} went ${directionWord(alert.alert_type)} ${target}`,
       message:
-        status === 'hit'
+        status === ALERT_STATUS.HIT
           ? `Your target was reached.${current}`
           : `Your alert fired and has been deactivated.${current}`,
     })
